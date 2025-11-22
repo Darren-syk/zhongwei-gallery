@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钟薇的浪漫时光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f9f0ff 0%, #e6e6fa 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            color: #d94d82;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .intro {
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+        
+        .photo-counter {
+            color: #888;
+            font-size: 1rem;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .photo-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .photo-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .photo-card.active img {
+            transform: scale(1.05);
+            animation: pulse 1.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-title {
+            color: #d94d82;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .card-desc {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+        
+        .music-control i {
+            font-size: 24px;
+            color: #d94d82;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+            animation: zoomIn 0.5s;
+        }
+        
+        @keyframes zoomIn {
+            from {transform: scale(0.8); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 1001;
+        }
+        
+        .close:hover {
+            color: #d94d82;
+        }
+        
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d94d82"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            opacity: 0;
+            animation: float 8s linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+    
+    <div class="container">
+        <header>
+            <h1>小V同学的浪漫时光</h1>
+            <p class="subtitle">每一张照片，都是时光的标本</p>
+            <div class="photo-counter">共 <span id="photoCount">14</span> 张照片</div>
+        </header>
+        
+        <div class="intro">
+            <p>这里记录了钟薇生活中的美好瞬间，每一张照片背后都有一个独特的故事。点击照片可以查看动态效果，感受那一刻的情感和温度。</p>
+        </div>
+        
+        <div class="gallery" id="gallery">
+            <!-- 图片卡片通过JavaScript动态生成 -->
+        </div>
+        
+        <footer>
+            <p>© 2023 钟薇的浪漫时光 | 用照片记录生活的美好</p>
+        </footer>
+    </div>
+    
+    <div class="music-control" id="musicControl">
+        <i>♪</i>
+    </div>
+    
+    <div class="modal" id="imageModal">
+        <span class="close" id="closeModal">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_99d97b7d4f.mp3?filename=romantic-piano-melody-124769.mp3" type="audio/mp3">
+        您的浏览器不支持音频元素。
+    </audio>
+    
+    <script>
+        // 图片数据 - 关联描述和文案
+        const images = [
+            { 
+                id: 1, 
+                filename: "微信图片_20251122153856.jpg", 
+                alt: "俏皮瞬间", 
+                title: "俏皮瞬间：像素猫耳的可爱装扮", 
+                desc: "暖黄色调的室内楼梯背景，紫色卷发女性戴像素猫耳侧脸特写，用手托腮，整体风格俏皮可爱。戴上像素猫耳，感觉自己瞬间变得俏皮可爱。生活就像调色板，每一天都可以尝试不同的色彩和风格！" 
+            },
+            { 
+                id: 2, 
+                filename: "微信图片_202511221538541.jpg", 
+                alt: "创意三连拍", 
+                title: "创意三连拍：叉子的小剧场", 
+                desc: "夜晚城市街道背景，挂有串灯，女性在不同位置手持叉子，创意三连拍展示不同情绪。在夜晚的街头，用一把叉子演绎不同的情绪。生活中的小物件也能成为创意的源泉，只要用心发现！" 
+            },
+            { 
+                id: 3, 
+                filename: "微信图片_202511221538542.jpg", 
+                alt: "光影游戏", 
+                title: "光影游戏：意外的羊形投影", 
+                desc: "壮丽的日间山景，蓝天白云，光影形成意外的羊形投影，充满诗意与想象空间。原本想拍小猫的影子，却意外得到了小羊的形状。生活中的意外惊喜总是让人感到温暖和惊喜！" 
+            },
+            { 
+                id: 4, 
+                filename: "微信图片_202511221538551.jpg", 
+                alt: "时尚瞬间", 
+                title: "时尚瞬间：不经意展示耳骨钉", 
+                desc: "雾气弥漫的山林景观，前景是一座桥梁，女性不经意展示耳骨钉，时尚与自然完美结合。雾气弥漫的山林中，不经意间展示耳骨钉。细节处的点缀让整体造型更加完整，也让我更加自信！" 
+            },
+            { 
+                id: 5, 
+                filename: "微信图片_202511221538552.jpg", 
+                alt: "甜美装扮", 
+                title: "甜美装扮：兔耳朵的温柔时刻", 
+                desc: "开阔的日间天空与远山，光线明亮，女性戴兔耳朵发箍，展现甜美温柔的一面。戴上兔耳朵发箍，仿佛回到了纯真的童年时光。简单的小配饰带来大大的幸福感，保持童心很重要！" 
+            },
+            { 
+                id: 6, 
+                filename: "微信图片_202511221538553.jpg", 
+                alt: "浪漫餐桌", 
+                title: "浪漫餐桌：金鱼与郁金香的邂逅", 
+                desc: "绿意盎然的牧场，人物在羊群旁，金鱼与郁金香的美好邂逅，营造田园浪漫氛围。绿意盎然的牧场，金鱼与郁金香的美好邂逅。大自然总是能给我们最浪漫的灵感和无限惊喜！" 
+            },
+            { 
+                id: 7, 
+                filename: "微信图片_202511221538554.jpg", 
+                alt: "柔美自拍", 
+                title: "柔美自拍：珍珠与玫瑰的优雅", 
+                desc: "女性自拍，发间别着淡粉玫瑰，佩戴珍珠饰品，整体风格温馨甜美，充满女性魅力。淡粉玫瑰别在发间，珍珠点缀颈间。记录下这一刻的温柔，送给未来的自己，提醒自己要永远热爱生活！" 
+            },
+            { 
+                id: 8, 
+                filename: "微信图片_202511221538555.jpg", 
+                alt: "城市漫步", 
+                title: "城市漫步：街角的随性瞬间", 
+                desc: "女性在城市街道上漫步，背景有行人车辆，捕捉到自然的行走瞬间，生活气息浓厚。喜欢在城市中漫步，发现那些被忽略的美好。每一个转角，都可能有意外的风景等待被发现！" 
+            },
+            { 
+                id: 9, 
+                filename: "微信图片_202511221538556.jpg", 
+                alt: "文艺时光", 
+                title: "文艺时光：咖啡馆的悠闲午后", 
+                desc: "女性坐在咖啡馆窗边，面前放着咖啡和书本，窗外是城市街景，文艺气息浓厚。一杯咖啡，一本书，一个悠闲的下午。偶尔放慢脚步，享受属于自己的时光，这是生活给我的礼物。" 
+            },
+            { 
+                id: 10, 
+                filename: "微信图片_202511221538561.jpg", 
+                alt: "优雅时刻", 
+                title: "优雅时刻：托腮的温柔姿态", 
+                desc: "优雅托腮的女性，眼神温柔，背景简洁，突出人物的气质和情感表达。轻轻托着下巴，感受这一刻的宁静。生活中的小确幸往往就藏在这些不经意的瞬间里。" 
+            },
+            { 
+                id: 11, 
+                filename: "微信图片_202511221538562.jpg", 
+                alt: "自然微笑", 
+                title: "自然微笑：阳光下的温暖时刻", 
+                desc: "自然光线下女性微笑的特写，背景虚化突出面部表情，显得温暖亲切。阳光洒在脸上的感觉真好，这一刻的笑容是发自内心的。简单的生活，简单的快乐，这就是我热爱的生活！" 
+            },
+            { 
+                id: 12, 
+                filename: "微信图片_20251122153535.jpg", 
+                alt: "静谧时刻", 
+                title: "静谧时刻：与金鱼共处的温柔时光", 
+                desc: "深棕色长发的女性穿着白色无袖上衣，右手托着脸颊，身旁是游动的金鱼，宁静美好。在这个安静的午后，金鱼在鱼缸里优雅地游动，我仿佛也沉浸在这份宁静中。生活需要这样的时刻来沉淀和思考。" 
+            },
+            { 
+                id: 13, 
+                filename: "微信图片_20251122153854.jpg", 
+                alt: "生日祝福", 
+                title: "生日祝福：温馨的庆祝时刻", 
+                desc: "戴粉色条纹生日帽的女性坐在棕色皮沙发上，面前是生日蛋糕，庆祝氛围浓厚。戴上生日帽，许下新一岁的愿望。感恩生活中的每一个美好瞬间，期待未来更多的精彩！" 
+            },
+            { 
+                id: 14, 
+                filename: "微信图片_20251122153855.jpg", 
+                alt: "温馨家居", 
+                title: "温馨家居：家是最温暖的港湾", 
+                desc: "女性在家中舒适的环境里，可能是沙发或床上，氛围温馨放松，家的感觉十足。无论外面的世界多么喧嚣，家永远是最安心的港湾。在这里，可以做最真实的自己，享受生活的每一刻。" 
+            }
+        ];
+        
+        // 生成图片卡片 - 包含描述和文案
+        const gallery = document.getElementById('gallery');
+        
+        images.forEach(image => {
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+            card.innerHTML = `
+                <img src="D:/钟薇照片/${image.filename}" alt="${image.alt}" onerror="this.src='https://picsum.photos/400/300?random=${image.id}'">
+                <div class="card-content">
+                    <div class="card-title">${image.title}</div>
+                    <div class="card-desc">${image.desc}</div>
+                </div>
+            `;
+            
+            // 点击事件：动态效果+大图查看
+            card.addEventListener('click', function() {
+                this.classList.add('active');
+                setTimeout(() => {
+                    this.classList.remove('active');
+                }, 1500);
+                
+                const modal = document.getElementById('imageModal');
+                const modalImg = document.getElementById('modalImage');
+                modal.style.display = 'flex';
+                modalImg.src = this.querySelector('img').src;
+                modalImg.alt = image.alt;
+            });
+            
+            gallery.appendChild(card);
+        });
+        
+        // 音乐控制
+        const musicControl = document.getElementById('musicControl');
+        const bgMusic = document.getElementById('bgMusic');
+        let isPlaying = false;
+        
+        musicControl.addEventListener('click', function() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicControl.innerHTML = '<i>♪</i>';
+            } else {
+                bgMusic.play().catch(e => {
+                    musicControl.innerHTML = '<i>♪</i>';
+                });
+                musicControl.innerHTML = '<i>❚❚</i>';
+            }
+            isPlaying = !isPlaying;
+        });
+        
+        // 模态框关闭
+        const closeModal = document.getElementById('closeModal');
+        const modal = document.getElementById('imageModal');
+        
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // 漂浮心形效果
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 8 + 's';
+                heart.style.width = (Math.random() * 20 + 10) + 'px';
+                heart.style.height = heart.style.width;
+                heartsContainer.appendChild(heart);
+            }
+        }
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            createHearts();
+        });
+    </script>
+</body>
+</html>
